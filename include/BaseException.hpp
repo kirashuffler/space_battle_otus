@@ -15,7 +15,7 @@ public:
       : std::runtime_error(message),
         name_(abi::__cxa_demangle(typeid(*this).name(), 0, 0, nullptr))
       {}
-    const char* getClassName() const {
+    const char* GetClassName() const {
         return name_;  // This will give you the mangled name of the class, not a human-readable one.
     }
 private:

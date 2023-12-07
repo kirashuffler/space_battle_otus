@@ -20,5 +20,12 @@ TEST(LogCommandTest, LogCommand) {
   ifs.open(filename);
   std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
-  EXPECT_EQ(text, content);  // The file should contain the text we wrote
+  EXPECT_EQ(text, content);
+}
+TEST(LogCommandTest, CheckClassName) {
+  LogCommand cmd("");
+  std::string class_name = cmd.GetClassName();
+  std::string expected_name = "LogCommand";
+
+  EXPECT_EQ(class_name, expected_name);
 }
