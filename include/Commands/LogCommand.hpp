@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 #include "LogToFileCommand.hpp"
 
 class LogCommand : public ICommand {

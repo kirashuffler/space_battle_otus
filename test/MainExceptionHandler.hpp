@@ -1,9 +1,15 @@
 #pragma once
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include <utility>
-
 #include "../include/MainExceptionHandler.hpp"
+#include "../include/Commands/LogCommand.hpp"
+#include "../include/CommandsQueue.hpp"
+
+#include <queue>
+#include <format>
+#include <memory>
+#include <fstream>
+#include <string>
 
 DEFINE_EXCEPTION(MockException);
 
@@ -14,22 +20,76 @@ public:
   }
 };
 
-TEST(MainExceptionHandler, RegisterHandlerAndExecuteHandler){
+TEST(MainExceptionHandler, BasicRegisterHandlerAndExecuteHandler){
   bool is_handler_is_called = false;
-  auto exception_handler = [&is_handler_is_called](BaseException& e, ICommand* cmd){
+  auto exception_handler_callback = [&is_handler_is_called](BaseException& e, CommandPtr&  cmd){
     is_handler_is_called = true;
     return nullptr;
   };
-  MockCommand cmd;
+  CommandPtr cmd = std::make_unique<MockCommand>();
   MockException exp("");
-  MainExceptionHandler::RegisterHandler(cmd.GetClassName(), 
-                                        exp.GetClassName(),
-                                        exception_handler);
+  MainExceptionHandler::RegisterHandler("MockCommand", 
+                                        "MockException",
+                                        exception_handler_callback);
   try {
-    cmd.Execute();
+    cmd->Execute();
   } catch (BaseException& e) {
-    MainExceptionHandler::Handle(e, &cmd);
+    MainExceptionHandler::Handle(e, cmd);
   }
 
   EXPECT_TRUE(is_handler_is_called);
+}
+
+
+DEFINE_EXCEPTION(MockException1);
+
+class MockCommand1 : public ICommand {
+public:
+  void Execute() override {
+    throw MockException1("");
+  }
+};
+
+TEST(MainExceptionHandler, PushLogCommandToQueueByHandler){
+  CommandsQueue commands_queue;
+  commands_queue.Push(std::make_unique<MockCommand1>());
+
+  auto mock1_exception_handler_callback = [&commands_queue](BaseException& e, CommandPtr& cmd){
+    std::string log_msg = std::format("{} occured", e.what());
+    commands_queue.Push(std::make_unique<LogCommand>(log_msg));
+    return nullptr;
+  };
+  
+  MainExceptionHandler::RegisterHandler("MockCommand1",
+                                        "MockException1",
+                                        mock1_exception_handler_callback);
+  bool queue_is_empty = false;
+
+  {
+    auto cmd = commands_queue.GetCommand();
+    try {
+      cmd->Execute();
+    } catch (BaseException& e) {
+      MainExceptionHandler::Handle(e, cmd);
+    };
+  }
+
+  // try to execute log command, setting up for it
+
+  std::string filename = "logs.txt";
+  std::string text = "MockException1 occured";
+  std::ofstream ofs;
+  ofs.open("logs.txt", std::ofstream::out | std::ofstream::trunc);
+  ofs.close();
+
+  // execute LogCommand from queue
+  {
+    auto cmd = commands_queue.GetCommand();
+    cmd->Execute();
+  }
+
+  std::ifstream ifs;
+  ifs.open(filename);
+  std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+  EXPECT_EQ(text, content);
 }

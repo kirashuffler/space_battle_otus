@@ -11,13 +11,16 @@ public: \
 
 class BaseException : public std::runtime_error {
 public:
-    BaseException(const char* message)
-      : std::runtime_error(message),
-        name_(abi::__cxa_demangle(typeid(*this).name(), 0, 0, nullptr))
-      {}
-    const char* GetClassName() const {
-        return name_;  // This will give you the mangled name of the class, not a human-readable one.
-    }
+  BaseException(const char* extra_info)
+    : std::runtime_error(""),
+    extra_info_ { extra_info }
+    {}
+  const char* what() const noexcept override {
+    return (abi::__cxa_demangle(typeid(*this).name(), 0, 0, nullptr));
+  }
+  std::string GetExtraInfo() const {
+    return extra_info_;
+  }
 private:
-    const char* name_;
+    std::string extra_info_;
 };

@@ -1,4 +1,4 @@
-{ stdenv, gcc, gtest, lib }:
+{ stdenv, gcc13, gtest, lib }:
 
 stdenv.mkDerivation rec {
   pname = "space_battle";
@@ -6,11 +6,12 @@ stdenv.mkDerivation rec {
 
   src = ./.; 
 
-  buildInputs = [ stdenv gcc gtest ];
+  buildInputs = [ stdenv gcc13 gtest ];
 
   doCheck = true;
   buildPhase = ''
-    g++ -std=c++20 -o tests test/main.cpp -lgtest -lpthread
+    ulimit -c unlimited
+    g++ -std=c++20 -o tests test/main.cpp -lgtest -lpthread -g
   '';
 
   checkPhase = ''

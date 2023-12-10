@@ -1,5 +1,8 @@
 #pragma once
 #include <cxxabi.h>  // for __cxa_demangle
+#include <memory>
+#include "BaseException.hpp"
+
 
 struct ICommand {
   const char* GetClassName() const {
@@ -8,3 +11,5 @@ struct ICommand {
   virtual void Execute() {};
   virtual ~ICommand() = default;
 };
+
+using CommandPtr = std::unique_ptr<ICommand>;
