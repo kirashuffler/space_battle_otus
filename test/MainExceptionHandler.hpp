@@ -4,9 +4,9 @@
 #include "../include/MainExceptionHandler.hpp"
 #include "../include/Commands/LogCommand.hpp"
 #include "../include/CommandsQueue.hpp"
+#include "../include/ExceptionHandlers.hpp"
 
 #include <queue>
-#include <format>
 #include <memory>
 #include <fstream>
 #include <string>
@@ -54,15 +54,14 @@ TEST(MainExceptionHandler, PushLogCommandToQueueByHandler){
   CommandsQueue commands_queue;
   commands_queue.Push(std::make_unique<MockCommand1>());
 
-  auto mock1_exception_handler_callback = [&commands_queue](BaseException& e, CommandPtr& cmd){
-    std::string log_msg = std::format("{} occured", e.what());
-    commands_queue.Push(std::make_unique<LogCommand>(log_msg));
-    return nullptr;
-  };
-  
-  MainExceptionHandler::RegisterHandler("MockCommand1",
-                                        "MockException1",
-                                        mock1_exception_handler_callback);
+  MainExceptionHandler::RegisterHandler(
+      "MockCommand1",
+      "MockException1",
+      [&](BaseException& e, CommandPtr& cmd){
+      exception_handlers::PushToQueueFailedCommandLogger(commands_queue, e);
+        return nullptr;
+      }
+  );
   bool queue_is_empty = false;
 
   {
@@ -77,7 +76,7 @@ TEST(MainExceptionHandler, PushLogCommandToQueueByHandler){
   // try to execute log command, setting up for it
 
   std::string filename = "logs.txt";
-  std::string text = "MockException1 occured";
+  std::string text = "MockException1";
   std::ofstream ofs;
   ofs.open("logs.txt", std::ofstream::out | std::ofstream::trunc);
   ofs.close();

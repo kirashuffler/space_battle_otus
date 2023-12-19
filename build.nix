@@ -1,6 +1,6 @@
 let
-  pkgs = import <nixpkgs> { config.replaceStdenv = ( {pkgs} : pkgs.gcc13Stdenv ); };
+  pkgs = import <nixpkgs> {};
 in
   import ./default.nix {
-    inherit (pkgs) stdenv gcc13 gtest lib;
+    inherit (pkgs) stdenv gcc gtest lib;
 }
