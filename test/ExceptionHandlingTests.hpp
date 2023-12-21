@@ -5,6 +5,7 @@
 #include "../include/Commands/LogCommand.hpp"
 #include "../include/CommandsQueue.hpp"
 #include "../include/ExceptionHandlers.hpp"
+#include "Helpers.hpp"
 
 #include <queue>
 #include <memory>
@@ -15,6 +16,7 @@ class ExceptionHandling : public testing::Test {
 protected:
   void TearDown() override {
     MainExceptionHandler::Reset();
+    commands_queue_ = {};
   }
   CommandsQueue commands_queue_;
 };
@@ -48,50 +50,34 @@ TEST_F(ExceptionHandling, RegisterAndExecuteHandler){
   EXPECT_TRUE(is_handler_is_called);
 }
 
-TEST_F(ExceptionHandling, PushLogCommandToQueueByHandler){
-  commands_queue.Push(std::make_unique<MockCommand>());
 
+TEST_F(ExceptionHandling, PushLogCommandToQueueByHandler){
   MainExceptionHandler::RegisterHandler(
       "MockCommand",
       "MockException",
       [&](BaseException& e, CommandPtr& cmd){
-      exception_handlers::PushToQueueFailedCommandLogger(commands_queue, e);
+      exception_handlers::PushToQueueFailedCommandLogger(commands_queue_, e);
         return nullptr;
       }
   );
-  bool queue_is_empty = false;
 
-  auto cmd = commands_queue.GetCommand();
-  try {
-    cmd->Execute();
-  } catch (BaseException& e) {
-    MainExceptionHandler::Handle(e, cmd);
-  };
-  // try to execute log command, setting up for it
-  std::string filename = "logs.txt";
+  test_helpers::ClearLogFile();
+
+  commands_queue_.Push(std::make_unique<MockCommand>());
+  test_helpers::RunCommands(commands_queue_);
+
   std::string text = "MockException";
-  std::ofstream ofs;
-  ofs.open("logs.txt", std::ofstream::out | std::ofstream::trunc);
-  ofs.close();
-
-  // execute LogCommand from queue
-  cmd = commands_queue.GetCommand();
-  cmd->Execute();
-
-  std::ifstream ifs;
-  ifs.open(filename);
-  std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-  EXPECT_EQ(text, content);
+  EXPECT_EQ(text, test_helpers::GetLogFileContent());
 }
 
+
 TEST_F(ExceptionHandling, PushRepeaterCommandToQueue){
-  CommandsQueue commands_queue;
   MainExceptionHandler::RegisterHandler(
       "MockCommand",
       "MockException",
       [&](BaseException& e, CommandPtr& cmd){
         exception_handlers::PushToQueueFailedCommandRepeater(
-            commands_queue,
+            commands_queue_,
             cmd);
         return nullptr;
       }
@@ -105,20 +91,34 @@ TEST_F(ExceptionHandling, PushRepeaterCommandToQueue){
         return nullptr;
       }
   );
-  commands_queue.Push(std::make_unique<MockCommand>());
+  commands_queue_.Push(std::make_unique<MockCommand>());
 
-  while (commands_queue.Size() > 0){
-    auto cmd = commands_queue.GetCommand();
-    try {
-      cmd->Execute();
-    } catch (BaseException& e) {
-      MainExceptionHandler::Handle(e, cmd);
-    }
-  }
+  test_helpers::RunCommands(commands_queue_);
 
   EXPECT_TRUE(is_repeater_called);
 }
 
 TEST_F(ExceptionHandling, RepeatAndLogCommandOnException){
-
+  MainExceptionHandler::RegisterHandler(
+      "MockCommand",
+      "MockException",
+      [&](BaseException& e, CommandPtr& cmd){
+        exception_handlers::PushToQueueFailedCommandRepeater(
+            commands_queue_,
+            cmd);
+        return nullptr;
+      }
+  );
+  MainExceptionHandler::RegisterHandler(
+      "RepeaterCommand",
+      "MockException",
+      [&](BaseException& e, CommandPtr& cmd){
+        exception_handlers::PushToQueueFailedCommandLogger(commands_queue_, e);
+        return nullptr;
+      }
+  );
+  test_helpers::ClearLogFile();
+  commands_queue_.Push(std::make_unique<MockCommand>());
+  test_helpers::RunCommands(commands_queue_);
+  EXPECT_EQ(std::string("MockException"), test_helpers::GetLogFileContent());
 }
