@@ -3,7 +3,7 @@
 
 class RepeaterCommand : public ICommand {
 public:
-  RepeaterCommand(CommandPtr& cmd) : cmd_ { std::move(cmd) }{}
+  RepeaterCommand(CommandPtr cmd) : cmd_ { std::move(cmd) }{}
   void Execute() override {
     cmd_->Execute();
   }

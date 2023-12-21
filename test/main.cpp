@@ -3,7 +3,7 @@
 #include "RotateTests.hpp"
 #include "LogToFileCommandTests.hpp"
 #include "LogCommandTest.hpp"
-#include "MainExceptionHandler.hpp"
+#include "ExceptionHandlingTests.hpp"
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

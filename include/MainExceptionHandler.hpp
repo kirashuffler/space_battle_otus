@@ -6,7 +6,6 @@
 #include <memory>
 #include "ICommand.hpp"
 #include "BaseException.hpp"
-#include <iostream>
 
 DEFINE_EXCEPTION(MainExceptionHandlerNoSuchHandlerCallbackException)
 DEFINE_EXCEPTION(MainExceptionHandlerNullptrCommandObjException)
@@ -32,6 +31,9 @@ public:
 
   static void RegisterHandler(CommandType cmd_name, ExceptionType exception_name, ExceptionHandlerCb handler) {
     store_[cmd_name][exception_name] = handler;
+  }
+  static void Reset() {
+    store_.clear();
   }
 private:
   static HandlersMap store_;
