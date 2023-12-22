@@ -2,7 +2,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "../include/MainExceptionHandler.hpp"
-#include "../include/Commands/LogCommand.hpp"
 #include "../include/CommandsQueue.hpp"
 #include "../include/ExceptionHandlers.hpp"
 #include "Helpers.hpp"
@@ -117,6 +116,40 @@ TEST_F(ExceptionHandling, RepeatAndLogCommandOnException){
         return nullptr;
       }
   );
+  test_helpers::ClearLogFile();
+  commands_queue_.Push(std::make_unique<MockCommand>());
+  test_helpers::RunCommands(commands_queue_);
+  EXPECT_EQ(std::string("MockException"), test_helpers::GetLogFileContent());
+}
+
+TEST_F(ExceptionHandling, RepeatTwiceAndLogCommandOnException){
+  MainExceptionHandler::RegisterHandler(
+      "MockCommand",
+      "MockException",
+      [&](BaseException& e, CommandPtr& cmd){
+        exception_handlers::PushToQueueFailedCommandRepeater(
+            commands_queue_,
+            cmd);
+        return nullptr;
+      }
+  );
+  MainExceptionHandler::RegisterHandler(
+      "RepeaterCommand",
+      "MockException",
+      [&](BaseException& e, CommandPtr& cmd){
+        exception_handlers::PushToQueueTwiceFailedCommandRepeater(commands_queue_, cmd);
+        return nullptr;
+      }
+  );
+  MainExceptionHandler::RegisterHandler(
+      "SecondRepeaterCommand",
+      "MockException",
+      [&](BaseException& e, CommandPtr& cmd){
+        exception_handlers::PushToQueueFailedCommandLogger(commands_queue_, e);
+        return nullptr;
+      }
+  );
+
   test_helpers::ClearLogFile();
   commands_queue_.Push(std::make_unique<MockCommand>());
   test_helpers::RunCommands(commands_queue_);
