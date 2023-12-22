@@ -1,14 +1,15 @@
 #pragma once
-#include "ICommand.hpp"
-#include <queue>
-#include <memory>
-#include "BaseException.hpp"
 #include <iostream>
+#include <memory>
+#include <queue>
+
+#include "BaseException.hpp"
+#include "ICommand.hpp"
 
 DEFINE_EXCEPTION(CommandsQueueEmptyException);
 
 class ICommandsQueue {
-public:
+ public:
   virtual void Push(CommandPtr cmd) = 0;
   virtual CommandPtr GetCommand() = 0;
   virtual size_t Size() = 0;
@@ -16,22 +17,19 @@ public:
 };
 
 class CommandsQueue : public ICommandsQueue {
-public:
+ public:
   void Push(CommandPtr cmd) override {
     commands_queue_.emplace(std::move(cmd));
   }
   CommandPtr GetCommand() override {
-    if (commands_queue_.size() == 0)
-      throw CommandsQueueEmptyException("");
+    if (commands_queue_.size() == 0) throw CommandsQueueEmptyException("");
     CommandPtr cur_cmd = std::move(commands_queue_.front());
     commands_queue_.pop();
     return cur_cmd;
   }
 
-  size_t Size() override {
-    return commands_queue_.size();
-  }
+  size_t Size() override { return commands_queue_.size(); }
 
-private:
+ private:
   std::queue<std::unique_ptr<ICommand>> commands_queue_;
 };

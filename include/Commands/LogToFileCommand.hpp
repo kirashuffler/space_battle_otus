@@ -1,13 +1,14 @@
 #pragma once
-#include "../BaseException.hpp"
-#include "../ICommand.hpp"
 #include <fstream>
 #include <string>
+
+#include "../BaseException.hpp"
+#include "../ICommand.hpp"
 
 DEFINE_EXCEPTION(LogToFileCommandUnableToOpenFileException)
 
 class LogToFileCommand : public ICommand {
-public:
+ public:
   LogToFileCommand(const std::string &filename, const std::string &text)
       : filename_(filename), text_(text) {}
 
@@ -22,7 +23,7 @@ public:
     }
   }
 
-private:
+ private:
   std::string filename_;
   std::string text_;
 };

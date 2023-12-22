@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../include/Commands/LogCommand.hpp"
-
 #include "gtest/gtest.h"
 
 TEST(LogCommandTest, LogCommand) {
@@ -18,7 +17,8 @@ TEST(LogCommandTest, LogCommand) {
   // Check if the file is correctly written with the provided text
   std::ifstream ifs;
   ifs.open(filename);
-  std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+  std::string content((std::istreambuf_iterator<char>(ifs)),
+                      (std::istreambuf_iterator<char>()));
 
   EXPECT_EQ(text, content);
 }
