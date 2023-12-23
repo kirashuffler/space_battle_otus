@@ -10,7 +10,8 @@ stdenv.mkDerivation rec {
 
   doCheck = true;
   buildPhase = ''
-    g++ -std=c++20 -o tests test/main.cpp -lgtest -lpthread
+    ulimit -c unlimited
+    g++ -std=c++20 -o tests test/main.cpp -lgtest -lpthread -g
   '';
 
   checkPhase = ''

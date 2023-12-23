@@ -1,9 +1,10 @@
 #pragma once
-#include "IMovable.hpp"
 #include <stdexcept>
 
+#include "IMovable.hpp"
+
 class MockMovableWithExceptions : IMovable {
-public:
+ public:
   Vector GetLocation() const override {
     throw std::runtime_error("GetLocationException");
   }
