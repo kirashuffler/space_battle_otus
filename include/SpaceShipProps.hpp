@@ -8,4 +8,6 @@ struct SpaceShipProps {
   int direction{};
   int angular_velocity{};
   int angle{};
+  int fuel_level{};
+  int fuel_consumption{};
 };
