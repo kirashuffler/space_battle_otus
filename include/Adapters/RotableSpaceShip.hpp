@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IRotable.hpp"
-#include "SpaceShipProps.hpp"
+#include "../IRotable.hpp"
+#include "../SpaceShipProps.hpp"
 
 class RotableSpaceShip : public IRotable {
  public:

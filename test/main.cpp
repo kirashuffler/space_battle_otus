@@ -1,6 +1,8 @@
 #include "ExceptionHandlingTests.hpp"
+#include "FuelCommandsTests.hpp"
 #include "LogCommandTest.hpp"
 #include "LogToFileCommandTests.hpp"
+#include "MacroCommandTests.hpp"
 #include "MoveTests.hpp"
 #include "RotateTests.hpp"
 #include "gtest/gtest.h"

@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../include/Adapters/RotableSpaceShip.hpp"
+#include "../include/Commands/Rotate.hpp"
 #include "../include/ICommand.hpp"
 #include "../include/IRotable.hpp"
-#include "../include/RotableSpaceShip.hpp"
-#include "../include/Commands/Rotate.hpp"
 #include "MockedRotable.hpp"
 #include "gtest/gtest.h"
 

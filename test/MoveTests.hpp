@@ -1,8 +1,8 @@
 #pragma once
+#include "../include/Adapters/MovableSpaceShip.hpp"
+#include "../include/Commands/Move.hpp"
 #include "../include/ICommand.hpp"
 #include "../include/IMovable.hpp"
-#include "../include/MovableSpaceShip.hpp"
-#include "../include/Commands/Move.hpp"
 #include "MockedMovable.hpp"
 #include "gtest/gtest.h"
 
