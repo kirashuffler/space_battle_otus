@@ -1,8 +1,8 @@
 #pragma once
+#include "../include/Adapters/MovableSpaceShip.hpp"
+#include "../include/Commands/Move.hpp"
 #include "../include/ICommand.hpp"
 #include "../include/IMovable.hpp"
-#include "../include/MovableSpaceShip.hpp"
-#include "../include/Move.hpp"
 #include "MockedMovable.hpp"
 #include "gtest/gtest.h"
 
@@ -13,24 +13,17 @@ TEST(Move, FromOnePointToAnotherUsingVelocity) {
   Vector velocity{-7, 3};
   SpaceShipProps ship{.velocity = velocity, .position = start_position};
   MovableSpaceShip movable_ship_adapter{ship};
-  Move move{&movable_ship_adapter};
+  Move move{movable_ship_adapter};
   move.Execute();
   auto is_expected_result =
       movable_ship_adapter.GetLocation() == expected_position;
   EXPECT_EQ(is_expected_result, true);
 }
 
-TEST(Move, NoValidObjectPassedForExecution) {
-  SCOPED_TRACE(
-      "Throw an exception if no valid object is passed to move command");
-  Move move{nullptr};
-  EXPECT_THROW({ move.Execute(); }, std::runtime_error);
-}
-
 TEST(Move, GetLocationThrowsException) {
   SCOPED_TRACE("Throw an exception if GetLocation is faulty");
   mock::MockedGetLocationError mocked_movable;
-  Move move{&mocked_movable};
+  Move move{mocked_movable};
   try {
     move.Execute();
   } catch (const std::runtime_error& e) {
@@ -43,7 +36,7 @@ TEST(Move, GetLocationThrowsException) {
 TEST(Move, GetVelocityThrowsException) {
   SCOPED_TRACE("Throw an exception if GetVelocity is faulty");
   mock::MockedGetVelocityError mocked_movable;
-  Move move{&mocked_movable};
+  Move move{mocked_movable};
   try {
     move.Execute();
   } catch (const std::runtime_error& e) {
@@ -56,7 +49,7 @@ TEST(Move, GetVelocityThrowsException) {
 TEST(Move, SetLocationThrowsException) {
   SCOPED_TRACE("Throw an exception if SetLocation is faulty");
   mock::MockedSetLocationError mocked_movable;
-  Move move{&mocked_movable};
+  Move move{mocked_movable};
   try {
     move.Execute();
   } catch (const std::runtime_error& e) {

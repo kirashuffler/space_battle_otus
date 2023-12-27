@@ -3,9 +3,11 @@
 
 struct SpaceShipProps {
   Vector velocity{};
+  int velocity_module{};
   Vector position{};
   int directions_number{};
   int direction{};
   int angular_velocity{};
-  int angle{};
+  int fuel_level{};
+  int fuel_consumption{};
 };

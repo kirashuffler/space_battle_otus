@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IMovable.hpp"
-#include "SpaceShipProps.hpp"
+#include "../IMovable.hpp"
+#include "../SpaceShipProps.hpp"
 
 class MovableSpaceShip : public IMovable {
  public:
@@ -11,7 +11,7 @@ class MovableSpaceShip : public IMovable {
   void SetLocation(Vector new_position) override;
 
  private:
-  SpaceShipProps space_ship_;
+  SpaceShipProps& space_ship_;
 };
 
 MovableSpaceShip::MovableSpaceShip(SpaceShipProps& space_ship)
