@@ -19,9 +19,9 @@ TEST(MacroCommand, MoveBurnCommandsTest) {
   SpaceShipWithFuel fuel_adapter{space_ship};
 
   std::vector<CommandPtr> commands;
-  commands.emplace_back(std::make_unique<CheckFuel>(fuel_adapter));
-  commands.emplace_back(std::make_unique<Move>(move_adapter));
-  commands.emplace_back(std::make_unique<BurnFuel>(fuel_adapter));
+  commands.emplace_back(MakeCommand<CheckFuel>(fuel_adapter));
+  commands.emplace_back(MakeCommand<Move>(move_adapter));
+  commands.emplace_back(MakeCommand<BurnFuel>(fuel_adapter));
   MacroCommand move_with_fuel{std::move(commands)};
 
   move_with_fuel.Execute();
@@ -48,8 +48,8 @@ TEST(MacroCommand, RotateMoveCommandsTest) {
   EXPECT_EQ(velocity_vector, expected_velocity);
 
   std::vector<CommandPtr> commands;
-  commands.emplace_back(std::make_unique<Rotate>(rotate_adapter));
-  commands.emplace_back(std::make_unique<Move>(move_adapter));
+  commands.emplace_back(MakeCommand<Rotate>(rotate_adapter));
+  commands.emplace_back(MakeCommand<Move>(move_adapter));
   MacroCommand move_with_rotation{std::move(commands)};
   move_with_rotation.Execute();
 

@@ -34,7 +34,7 @@ TEST_F(ExceptionHandling, RegisterAndExecuteHandler) {
     is_handler_is_called = true;
     return nullptr;
   };
-  CommandPtr cmd = std::make_unique<MockCommand>();
+  CommandPtr cmd = MakeCommand<MockCommand>();
   MockException exp("");
   MainExceptionHandler::RegisterHandler("MockCommand", "MockException",
                                         exception_handler_callback);
@@ -56,7 +56,7 @@ TEST_F(ExceptionHandling, PushLogCommandToQueueByHandler) {
 
   test_helpers::ClearLogFile();
 
-  commands_queue_.Push(std::make_unique<MockCommand>());
+  commands_queue_.Push(MakeCommand<MockCommand>());
   test_helpers::RunCommands(commands_queue_);
 
   std::string text = "MockException";
@@ -76,7 +76,7 @@ TEST_F(ExceptionHandling, PushRepeaterCommandToQueue) {
                                           is_repeater_called = true;
                                           return nullptr;
                                         });
-  commands_queue_.Push(std::make_unique<MockCommand>());
+  commands_queue_.Push(MakeCommand<MockCommand>());
 
   test_helpers::RunCommands(commands_queue_);
 
@@ -97,7 +97,7 @@ TEST_F(ExceptionHandling, RepeatAndLogCommandOnException) {
         return nullptr;
       });
   test_helpers::ClearLogFile();
-  commands_queue_.Push(std::make_unique<MockCommand>());
+  commands_queue_.Push(MakeCommand<MockCommand>());
   test_helpers::RunCommands(commands_queue_);
   EXPECT_EQ(std::string("MockException"), test_helpers::GetLogFileContent());
 }
@@ -124,7 +124,7 @@ TEST_F(ExceptionHandling, RepeatTwiceAndLogCommandOnException) {
       });
 
   test_helpers::ClearLogFile();
-  commands_queue_.Push(std::make_unique<MockCommand>());
+  commands_queue_.Push(MakeCommand<MockCommand>());
   test_helpers::RunCommands(commands_queue_);
   EXPECT_EQ(std::string("MockException"), test_helpers::GetLogFileContent());
 }

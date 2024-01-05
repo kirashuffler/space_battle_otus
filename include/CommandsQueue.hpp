@@ -31,5 +31,5 @@ class CommandsQueue : public ICommandsQueue {
   size_t Size() override { return commands_queue_.size(); }
 
  private:
-  std::queue<std::unique_ptr<ICommand>> commands_queue_;
+  std::queue<CommandPtr> commands_queue_;
 };

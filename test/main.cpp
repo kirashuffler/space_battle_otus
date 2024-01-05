@@ -5,6 +5,7 @@
 #include "MacroCommandTests.hpp"
 #include "MoveTests.hpp"
 #include "RotateTests.hpp"
+#include "DependencyResolverTests.hpp"
 #include "gtest/gtest.h"
 
 int main(int argc, char **argv) {
