@@ -1,3 +1,4 @@
+#include "DependencyResolverTests.hpp"
 #include "ExceptionHandlingTests.hpp"
 #include "FuelCommandsTests.hpp"
 #include "LogCommandTest.hpp"
@@ -5,7 +6,6 @@
 #include "MacroCommandTests.hpp"
 #include "MoveTests.hpp"
 #include "RotateTests.hpp"
-#include "DependencyResolverTests.hpp"
 #include "gtest/gtest.h"
 
 int main(int argc, char **argv) {

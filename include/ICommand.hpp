@@ -17,7 +17,7 @@ struct ICommand {
 
 using CommandPtr = std::shared_ptr<ICommand>;
 
-template<class T, class... Args>
-CommandPtr MakeCommand(Args&&... args){
+template <class T, class... Args>
+CommandPtr MakeCommand(Args&&... args) {
   return CommandPtr(std::make_shared<T>(std::forward<Args>(args)...));
 }
