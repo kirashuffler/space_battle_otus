@@ -3,7 +3,6 @@
 #include "../include/IoC/DependencyResolver.hpp"
 #include "gtest/gtest.h"
 
-
 TEST(Core, IocShouldUpdateResolveDependencyStrategy) {
   bool was_called = false;
   ioc::IocStrategyUpdater updater =
@@ -17,18 +16,20 @@ TEST(Core, IocShouldUpdateResolveDependencyStrategy) {
   EXPECT_TRUE(was_called);
 }
 
-TEST(Core, IocShouldThrowExceptionIfDependencyIsNotFound){
-  EXPECT_THROW({ ioc::core::Resolve<std::any>("UnexistingDependency", {}); }, std::runtime_error);
+TEST(Core, IocShouldThrowExceptionIfDependencyIsNotFound) {
+  EXPECT_THROW({ ioc::core::Resolve<std::any>("UnexistingDependency", {}); },
+               std::runtime_error);
 }
 
-TEST(Core, IocShouldThrowBadCastException){
+TEST(Core, IocShouldThrowBadCastException) {
   ioc::IocStrategyUpdater updater =
-      [](ioc::IocStrategy args) -> ioc::IocStrategy {
-    return args;
-  };
+      [](ioc::IocStrategy args) -> ioc::IocStrategy { return args; };
   EXPECT_THROW(
-      {ioc::core::Resolve<int>(
-      "Update Ioc Resolve Dependency Strategy", {updater});}, std::bad_cast);
+      {
+        ioc::core::Resolve<int>("Update Ioc Resolve Dependency Strategy",
+                                {updater});
+      },
+      std::bad_cast);
 }
 
 TEST(DependencyResolver, Test) {

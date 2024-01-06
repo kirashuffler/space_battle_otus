@@ -9,7 +9,8 @@
 namespace ioc {
 
 namespace core {
-IocStrategy strategy = [](std::string dependency, ArgsVec args) -> std::any {
+inline IocStrategy strategy = [](std::string dependency,
+                                 ArgsVec args) -> std::any {
   if (dependency == "Update Ioc Resolve Dependency Strategy") {
     auto updating_strategy = std::any_cast<IocStrategyUpdater>(args[0]);
     return MakeCommand<UpdateIocResolveDependencyStrategy>(updating_strategy);
@@ -21,7 +22,7 @@ IocStrategy strategy = [](std::string dependency, ArgsVec args) -> std::any {
 };
 
 template <typename T>
-T Resolve(std::string dependency, ArgsVec args = {}) {
+inline T Resolve(std::string dependency, ArgsVec args = {}) {
   auto res = strategy(dependency, args);
   return std::any_cast<T>(res);
 }

@@ -3,6 +3,7 @@
 
 #include "../ICommand.hpp"
 #include "Common.hpp"
+#include "Core.hpp"
 
 namespace ioc {
 class RegisterDependency : public ICommand {
@@ -12,8 +13,9 @@ class RegisterDependency : public ICommand {
       : dependency_{dependency},
         dependency_resolver_strategy_{dependency_resolver_strategy} {}
   void Execute() override {
-    auto current_scope = Ioc.Resolve<DependenciesMap*>("IoC.Scope.Current");
-    current_scope.Add(dependency_, dependency_resolver_strategy_);
+    auto current_scope =
+        ioc::core::Resolve<DependenciesMap>("IoC.Scope.Current");
+    current_scope.emplace(dependency_, dependency_resolver_strategy_);
   }
 
  private:
