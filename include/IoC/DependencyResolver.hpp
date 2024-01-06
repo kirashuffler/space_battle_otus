@@ -9,7 +9,7 @@ class DependencyResolver : public IDependencyResolver {
     dependencies_ = std::any_cast<DependenciesMap>(scope);
   }
   std::any Resolve(std::string dependency,
-                   std::vector<std::any> args) override {
+                   std::vector<std::any> args = {}) override {
     DependenciesMap* dependencies = &dependencies_;
     while (true) {
       if (dependencies->contains(dependency)) {

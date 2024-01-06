@@ -21,7 +21,7 @@ IocStrategy strategy = [](std::string dependency, ArgsVec args) -> std::any {
 };
 
 template <typename T>
-T Resolve(std::string dependency, ArgsVec args) {
+T Resolve(std::string dependency, ArgsVec args = {}) {
   auto res = strategy(dependency, args);
   return std::any_cast<T>(res);
 }
