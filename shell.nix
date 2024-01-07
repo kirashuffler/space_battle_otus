@@ -7,5 +7,6 @@ pkgs.mkShell {
     cmake
     gcc
     gtest
+    gdb
   ];
 }

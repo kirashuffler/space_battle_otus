@@ -1,8 +1,10 @@
 #pragma once
+#include <iostream>
 #include <sstream>
 #include <string>
 
 #include "../ICommand.hpp"
+#include "../demangle.hpp"
 #include "Common.hpp"
 #include "UpdateIocResolveDependencyStrategy.hpp"
 
@@ -16,15 +18,21 @@ inline IocStrategy strategy = [](std::string dependency,
     return MakeCommand<UpdateIocResolveDependencyStrategy>(updating_strategy);
   } else {
     std::stringstream err;
-    err << "Dependency " << dependency << "not found in Ioc.\n";
     throw std::runtime_error(err.str().c_str());
   }
 };
 
+}  // namespace core
+
 template <typename T>
 inline T Resolve(std::string dependency, ArgsVec args = {}) {
-  auto res = strategy(dependency, args);
+  auto res = core::strategy(dependency, args);
   return std::any_cast<T>(res);
 }
-}  // namespace core
+
+template <>
+inline std::any Resolve<std::any>(std::string dependency, ArgsVec args) {
+  return core::strategy(dependency, args);
+}
+
 }  // namespace ioc

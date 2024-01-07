@@ -33,30 +33,37 @@ void Init::Execute() {
                          }});
     root_scope_->insert(
         {"IoC.Scope.Create", [](ArgsVec args) {
-           auto created_scope =
-               ioc::core::Resolve<Scope>("IoC.Scope.Create.Empty");
-           auto parent_scope = [&]() {
+           auto created_scope = ioc::Resolve<Scope>("IoC.Scope.Create.Empty");
+           auto parent_scope = [=]() {
              if (args.size() > 0) return std::any_cast<Scope>(args[0]);
-             return ioc::core::Resolve<Scope>("IoC.Scope.Current");
+             return ioc::Resolve<Scope>("IoC.Scope.Current");
            }();
-           created_scope->insert(
-               {"IoC.Scope.Parent",
-                [parent_scope](ArgsVec args) { return parent_scope; }});
+           created_scope->insert({"IoC.Scope.Parent",
+                                  [=](ArgsVec args) { return parent_scope; }});
            return created_scope;
          }});
     root_scope_->insert({"IoC.Register", [](ArgsVec args) {
-                           return MakeCommand<RegisterDependency>(
-                               std::any_cast<std::string>(args[0]),
-                               std::any_cast<IocFunctor>(args[1]));
+                           auto dependency = [&]() -> std::string {
+                             try {
+                               return std::any_cast<const char*>(args[0]);
+                             } catch (std::bad_cast& e) {
+                             };
+                             return std::any_cast<std::string>(args[0]);
+                           }();
+                           auto functor = std::any_cast<IocFunctor>(args[1]);
+                           return MakeCommand<RegisterDependency>(dependency,
+                                                                  functor);
                          }});
-    ioc::core::Resolve<CommandPtr>(
-        "Update Ioc Dependency Strategy", {[](ioc::IocStrategy old_strategy) {
-          return [&](std::string dependency, ArgsVec args) {
-            auto scope = current_scope_ ? current_scope_ : root_scope_;
-            DependencyResolver dependency_resolver{scope};
-            return dependency_resolver.Resolve(dependency, args);
-          };
-        }})
+    ioc::IocStrategyUpdater updater =
+        [](ioc::IocStrategy old_strategy) -> ioc::IocStrategy {
+      return [&](std::string dependency, ArgsVec args) -> std::any {
+        auto scope = current_scope_ != nullptr ? current_scope_ : root_scope_;
+        DependencyResolver dependency_resolver{scope};
+        return dependency_resolver.Resolve(dependency, args);
+      };
+    };
+    ioc::Resolve<CommandPtr>("Update Ioc Resolve Dependency Strategy",
+                             {updater})
         ->Execute();
     already_successfully_ = true;
   }

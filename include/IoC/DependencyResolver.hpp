@@ -1,27 +1,34 @@
 #pragma once
+#include <iostream>
+#include <sstream>
+
 #include "Common.hpp"
 #include "IDependencyResolver.hpp"
 
 namespace ioc {
 class DependencyResolver : public IDependencyResolver {
  public:
-  DependencyResolver(std::any scope) {
-    dependencies_ = std::any_cast<DependenciesMap>(scope);
-  }
+  DependencyResolver(std::any scope) { scope_ = std::any_cast<Scope>(scope); }
   std::any Resolve(std::string dependency,
                    std::vector<std::any> args = {}) override {
-    DependenciesMap* dependencies = &dependencies_;
+    auto cur_scope = scope_;
     while (true) {
-      if (dependencies->contains(dependency)) {
-        return dependencies->at(dependency)(args);
+      if (cur_scope->contains(dependency)) {
+        return cur_scope->at(dependency)(args);
       } else {
-        dependencies = (std::any_cast<DependenciesMap*>(
-            dependencies_.at("IoC.Scope.Parent")(args)));
+        try {
+          cur_scope =
+              std::any_cast<Scope>(cur_scope->at("IoC.Scope.Parent")(args));
+        } catch (std::runtime_error& e) {
+          std::stringstream ss;
+          ss << "Dependency '" << dependency << "' is not registered\n";
+          throw std::runtime_error(ss.str().c_str());
+        }
       }
     }
   }
 
  private:
-  std::unordered_map<std::string, IocFunctor> dependencies_;
+  Scope scope_;
 };
 }  // namespace ioc
