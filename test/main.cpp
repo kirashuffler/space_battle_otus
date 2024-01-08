@@ -1,5 +1,7 @@
+#include "DependencyResolverTests.hpp"
 #include "ExceptionHandlingTests.hpp"
 #include "FuelCommandsTests.hpp"
+#include "IocScopesTests.hpp"
 #include "LogCommandTest.hpp"
 #include "LogToFileCommandTests.hpp"
 #include "MacroCommandTests.hpp"

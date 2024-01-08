@@ -12,7 +12,7 @@ struct Vector {
   bool operator==(const Vector& other) const {
     return x == other.x && y == other.y;
   }
-  friend std::ostream& operator<<(std::ostream &os, const Vector &v) {
+  friend std::ostream& operator<<(std::ostream& os, const Vector& v) {
     os << "(" << v.x << ", " << v.y << ")";
     return os;
   }

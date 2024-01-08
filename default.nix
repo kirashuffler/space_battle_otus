@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   doCheck = true;
   buildPhase = ''
     ulimit -c unlimited
-    g++ -std=c++20 -o tests test/main.cpp -lgtest -lpthread -g
+    g++ -std=c++20 -o tests test/main.cpp src/Init.cpp -lgtest -lpthread -g
   '';
 
   checkPhase = ''
